@@ -1,34 +1,27 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { nanoid } from 'nanoid';
 import { Form, FormLabel } from './ContactForm.styled';
+import { addContact } from 'Redux/Store';
+import { useDispatch, useSelector } from 'react-redux';
 
-export const ContactForm = ({ onFormSubmit }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-
-  const handleChange = event => {
-    const { name, value } = event.target;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'number':
-        setNumber(value);
-        break;
-      default:
-        return;
-    }
-  };
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(state => state.phonebook.contacts);
 
   const handleSubmit = event => {
+    const form = event.currentTarget.elements;
     event.preventDefault();
-    onFormSubmit(name, number);
-    reset();
-  };
-
-  const reset = () => {
-    setName('');
-    setNumber('');
+    contacts.find(
+      contact => contact.name.toLowerCase() === form.name.value.toLowerCase()
+    )
+      ? alert(`${form.name.value} is already in contacts.`)
+      : dispatch(
+          addContact({
+            id: nanoid(5),
+            name: form.name.value,
+            number: form.number.value,
+          })
+        );
+    event.target.reset();
   };
 
   return (
@@ -36,8 +29,6 @@ export const ContactForm = ({ onFormSubmit }) => {
       <FormLabel>
         Name
         <input
-          onChange={handleChange}
-          value={name}
           name="name"
           type="text"
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
@@ -49,8 +40,6 @@ export const ContactForm = ({ onFormSubmit }) => {
       <FormLabel>
         Number
         <input
-          onChange={handleChange}
-          value={number}
           type="tel"
           name="number"
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
@@ -62,8 +51,4 @@ export const ContactForm = ({ onFormSubmit }) => {
       <button type="submit">Add contact</button>
     </Form>
   );
-};
-
-ContactForm.propTypes = {
-  onFormSubmit: PropTypes.func.isRequired,
 };
