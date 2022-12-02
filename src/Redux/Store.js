@@ -1,4 +1,6 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
 const sliceContact = createSlice({
   name: 'phonebook',
@@ -26,10 +28,19 @@ const sliceContact = createSlice({
   },
 });
 
+const persistConfig = {
+  key: 'root',
+  storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, sliceContact.reducer);
+
 export const { addContact, deleteContact, filter } = sliceContact.actions;
 
 export const store = configureStore({
   reducer: {
-    phonebook: sliceContact.reducer,
+    phonebook: persistedReducer,
   },
 });
+
+export const persistor = persistStore(store);
