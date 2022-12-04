@@ -4,7 +4,7 @@ import { filter } from 'Redux/Store';
 
 export const Filter = () => {
   const dispatch = useDispatch();
-  const filterSlice = useSelector(state => state.phonebook.filter);
+  const filterSlice = useSelector(state => state.filter.filter);
 
   const change = event => {
     dispatch(filter(event.target.value));
